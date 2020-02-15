@@ -35,7 +35,7 @@ model = keras.Sequential([
     keras.layers.Flatten(),
     keras.layers.Dense(100, activation='relu'),
     keras.layers.Dense(50, activation='relu'),
-    keras.layers.Dense(10)
+    keras.layers.Dense(10, activation='softmax')
 ])
 
 # print model summary
@@ -45,12 +45,14 @@ print("\n\n\n")
 
 # compile model
 model.compile(optimizer='adam',
-              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+              loss="sparse_categorical_crossentropy",
+              #loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
 
 # train and save the model
-model.fit(train_images, train_labels, epochs=10)
+model.fit(train_images, train_labels, epochs=7)
 model.save('model_cdf2')
+model.save('model_cdf2.h5')
 
 test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
 print('\nTest accuracy:', test_acc)
@@ -58,10 +60,10 @@ print('\nTest accuracy:', test_acc)
 predictions = model.predict(test_images)
 
 # remove channel from image
-train_images = train_images[:,:,:,0]
-test_labels = test_images[:,:,:,0]
+# train_images = train_images[:,:,:,0]
+# test_labels = test_images[:,:,:,0]
 
-def plot_image(i, predictions_array, true_label, img):
+""" def plot_image(i, predictions_array, true_label, img):
     predictions_array, true_label, img = predictions_array, true_label[i], img[i]
     plt.grid(False)
     plt.xticks([])
@@ -90,12 +92,12 @@ def plot_value_array(i, predictions_array, true_label):
     predicted_label = np.argmax(predictions_array)
 
     thisplot[predicted_label].set_color('red')
-    thisplot[true_label].set_color('blue')
+    thisplot[true_label].set_color('blue') """
 
-i = 0
+""" i = 0
 plt.figure(figsize=(6,3))
 plt.subplot(1,2,1)
 plot_image(i, predictions[i], test_labels, test_images)
 plt.subplot(1,2,2)
 plot_value_array(i, predictions[i],  test_labels)
-plt.show()
+plt.show() """
