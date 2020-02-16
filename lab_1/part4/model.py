@@ -11,12 +11,12 @@ fashion_mnist = keras.datasets.fashion_mnist
 class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
                'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
 
-train_images = train_images / 255.0
-test_images = test_images / 255.0
+train_images = train_images 
+test_images = test_images 
 
 # add additional channel to data
-train_images = np.expand_dims(train_images, axis=3)
-test_images = np.expand_dims(test_images, axis=3)
+train_images = train_images.reshape(-1, 28, 28, 1)
+test_images = test_images.reshape(-1, 28, 28, 1)
 
 """ plt.figure(figsize=(10,10))
 for i in range(25):
@@ -56,10 +56,6 @@ model_path = "./model_cdf2"
 history = "yuhhh"
 if os.path.exists(model_path):
     model = keras.models.load_model(model_path)
-    
-    # load loss history
-    with open('loss.json', 'r') as fp:
-        history = json.load(fp)
 else:
     # train and save the model
     history = model.fit(train_images, train_labels, epochs=10)
@@ -71,9 +67,13 @@ else:
     with open('loss.json', 'w') as fp:
         json.dump(history.history, fp)
 
+# load loss history
+with open('loss.json', 'r') as fp:
+    history = json.load(fp)
+
 test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
 print('\nTest accuracy:', test_acc)
-
+breakpoint()
 # plot loss
 plt.plot(history['loss'])
 plt.xlabel('Epochs')
