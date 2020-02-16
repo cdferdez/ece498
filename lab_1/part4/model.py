@@ -66,7 +66,7 @@ else:
     model.save('model_cdf2')
     
     # save loss data
-    history.history['acc'] = str(history.history['loss'])
+    history.history['acc'] = str(history.history['acc'])
 
     with open('loss.json', 'w') as fp:
         json.dump(history.history, fp)
@@ -76,4 +76,7 @@ print('\nTest accuracy:', test_acc)
 
 # plot loss
 plt.plot(history['loss'])
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.title('Loss Function Value vs Epochs')
 plt.show()
