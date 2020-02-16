@@ -1,5 +1,7 @@
 import requests
+import gzip
 import tensorflow as tf
+import numpy as np
 from tensorflow import keras
 
 def get_testset():
@@ -11,3 +13,15 @@ def get_testset():
     with open(filename, 'wb') as f: 
         f.write(r.content)
     return load_dataset(filename), testset_id
+
+def load_dataset(path):
+    num_img = 1000
+    with gzip.open(path, 'rb') as infile:
+        data = np.frombuffer(infile.read(), dtype=np.uint8).reshape(num_img, 784)
+    return data
+
+data = get_testset()
+
+# load model 
+model = keras.models.load_model('model_cdf2')
+breakpoint()
