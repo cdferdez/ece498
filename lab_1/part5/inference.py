@@ -20,8 +20,11 @@ def load_dataset(path):
         data = np.frombuffer(infile.read(), dtype=np.uint8).reshape(num_img, 784)
     return data
 
-data = get_testset()
+data, testset_id = get_testset()
+
+# reshape the data
+data = data.reshape(1000, 28, 28, 1)
 
 # load model 
 model = keras.models.load_model('model_cdf2')
-breakpoint()
+predictions = model.predict(data)
