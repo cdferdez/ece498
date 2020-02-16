@@ -28,3 +28,27 @@ data = data.reshape(1000, 28, 28, 1)
 # load model 
 model = keras.models.load_model('model_cdf2')
 predictions = model.predict(data)
+predictions = tf.argmax(predictions, 1)
+
+with tf.Session() as sess:
+    predictions = sess.run(predictions)
+
+predictions = ''.join(predictions.astype(str))
+
+# send predictions to server
+def verify_predictions(predictions, testset_id):
+    url = 'https://courses.engr.illinois.edu/ece498icc/sp2020/lab1_request_dataset.php'
+    values = {'request': 'verify', 'netid':'cdf2', 'testset_id':testset_id, 'prediction':predictions}
+    r = requests.post(url, data=values)
+    print(r.text)
+    return
+
+verify_predictions(predictions, testset_id)
+
+# cleanup
+import os
+import glob
+
+for file in glob.glob("./images_*"):
+    os.remove(file)
+
