@@ -37,7 +37,7 @@ for i in range(10):
     data = data.reshape(1000, 28, 28, 1)
 
     # load model 
-    model = keras.models.load_model('model_cdf2')
+    model = keras.models.load_model('model_cdf2.h5')
     predictions = model.predict(data)
     predictions = tf.argmax(predictions, 1)
 
