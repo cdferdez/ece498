@@ -4,80 +4,63 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 fashion_mnist = keras.datasets.fashion_mnist
-(train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
+train, test = fashion_mnist.load_data()
 
-train_images = train_images / 255.0
-test_images = test_images / 255.0
+# training data
+train_images, train_labels = train
+train_images = train_images/255
+
+test_images, test_labels = test
+test_images = test_images/255
+
+train_dataset = tf.data.Dataset.from_tensor_slices((train_images, train_labels))
+test_dataset = tf.data.Dataset.from_tensor_slices((test_images, test_labels))
+
+BATCH_SIZE = 64
+SHUFFLE_BUFFER_SIZE = 100
+
+train_dataset = train_dataset.shuffle(SHUFFLE_BUFFER_SIZE).batch(BATCH_SIZE)
+test_dataset = test_dataset.batch(BATCH_SIZE)
 
 # Training Parameters
 learning_rate = 0.001
 num_steps = 500
-batch_size = 128
 display_step = 10
 
 # Network Parameters
-num_input = 784
 num_classes = 10
 dropout = 0.75
 
 # Graph Input
-X = tf.placeholder(tf.float32, shape=(28, 28, 1))
-Y = tf.placeholder(tf.float32, shape=(None, num_classes))
+X = tf.placeholder(tf.float32, shape=(None, 28, 28))
+Y = tf.placeholder(tf.float32)
 keep_prob = tf.placeholder(tf.float32)
 
-# layer wrappers
-def conv2d(x, W, b, strides=1):
-    x = tf.nn.conv2d(x, W, strides=[1, strides, strides, 1], padding='SAME')
-    x = tf.nn.bias_add(x, b)
-    return tf.nn.relu(x)
-
-def maxpool2d(x, k=2):
-    return tf.nn.max_pool(x, ksize=[1, k, k, 1], strides = [1, k, k, 1], padding='SAME')
-
 # model
-def conv_net(x, weights, biases, dropout):
+def conv_net(x, dropout):
     x = tf.reshape(x, shape=[-1, 28, 28, 1])
 
     # first conv layer
-    conv1 = conv2d(x, weights['wc1'], biases['bc1'])
-    conv1 = maxpool2d(conv1, k=2)
+    conv1 = tf.layers.Conv2D(filters=3, kernel_size=(5,5), strides=1, activation=tf.nn.relu)(x)
+    conv1 = tf.layers.MaxPooling2D(pool_size=12,strides=2)(conv1)
 
     # second conv layer
-    conv2 = conv2d(conv1, weights['wc2'], biases['bc2'])
-    conv2 = maxpool2d(conv2, k=2)
+    conv2 = tf.layers.Conv2D(filters=3, kernel_size=(3,3), strides=1, padding="SAME", activation=tf.nn.relu)(conv1)
+    conv2 = tf.layers.MaxPooling2D(pool_size=6, strides=2)(conv2)
 
     # fully connected layer
-    fc1 = tf.reshape(conv2, [-1, weights['wd1'].get_shape().as_list()[0]])
-    fc1 = tf.add(tf.matmul(fc1, weights['wd1']), biases['bd1'])
-    fc1 = tf.nn.relu(fc1)
-
+    fc1 = tf.layers.Flatten()(conv2)
+    fc1 = tf.layers.Dense(units=100, activation=tf.nn.relu)(fc1)
+    fc2 = tf.layers.Dense(units=50, activation=tf.nn.relu)(fc1)
     # apply dropout
-    fc1 = tf.nn.dropout(fc1, dropout)
+    fc3 = tf.layers.Dropout(rate=dropout)(fc2)
 
-    out = tf.add(tf.matmul(fc1, weights['out']), biases['out'])
-    return out
+    fc3 = tf.layers.Dense(units=10, activation=tf.nn.softmax)(fc2)
 
-# Store layers weight & bias
-weights = {
-    # 5x5 conv, 1 input, 32 outputs
-    'wc1': tf.Variable(tf.random_normal([5, 5, 1, 32])),
-    # 5x5 conv, 32 inputs, 64 outputs
-    'wc2': tf.Variable(tf.random_normal([5, 5, 32, 64])),
-    # fully connected, 7*7*64 inputs, 1024 outputs
-    'wd1': tf.Variable(tf.random_normal([7*7*64, 1024])),
-    # 1024 inputs, 10 outputs (class prediction)
-    'out': tf.Variable(tf.random_normal([1024, num_classes]))
-}
-
-biases = {
-    'bc1': tf.Variable(tf.random_normal([32])),
-    'bc2': tf.Variable(tf.random_normal([64])),
-    'bd1': tf.Variable(tf.random_normal([1024])),
-    'out': tf.Variable(tf.random_normal([num_classes]))
-}
+    return fc3
 
 # Construct model
-logits = conv_net(X, weights, biases, keep_prob)
+logits = conv_net(X, keep_prob)
 prediction = tf.nn.softmax(logits)
 
 # Define loss and optimizer
@@ -99,9 +82,15 @@ with tf.Session() as sess:
     # Run the initializer
     sess.run(init)
 
+    train_iter = train_dataset.make_one_shot_iterator()
+    test_iter = test_dataset.make_one_shot_iterator()
+
     for step in range(1, num_steps+1):
-        batch_x, batch_y = mnist.train.next_batch(batch_size)
-        # Run optimization op (backprop)
+        batch_x, batch_y = train_iter.get_next()
+        
+        batch_x = sess.run(batch_x)
+        batch_y = sess.run(batch_y)
+        
         sess.run(train_op, feed_dict={X: batch_x, Y: batch_y, keep_prob: dropout})
         if step % display_step == 0 or step == 1:
             # Calculate batch loss and accuracy
@@ -116,6 +105,6 @@ with tf.Session() as sess:
 
     # Calculate accuracy for 256 MNIST test images
     print("Testing Accuracy:", \
-        sess.run(accuracy, feed_dict={X: mnist.test.images[:256],
-                                      Y: mnist.test.labels[:256],
+        sess.run(accuracy, feed_dict={X: test_images[:256],
+                                      Y: test_labels[:256],
                                       keep_prob: 1.0}))
