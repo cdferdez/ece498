@@ -9,7 +9,7 @@ import lossFunction
 import optimizerFunction
 import computeLoss
 import trainStep
-# import plotFunction
+import plotFunction
 
 # Preliminary setup, do not modify
 if len(sys.argv) > 1:
@@ -117,4 +117,4 @@ for i in range(250):
 # You may prepare the plot using another tool like Excel, but this is the recommended way.
 # # 10. Finally, add a function to plot the loss value across training steps
 # # Please refer to the python library, pyplot https://matplotlib.org/users/pyplot_tutorial.html
-# plotFunction.function(lossValues);
+plotFunction.function(lossValues);

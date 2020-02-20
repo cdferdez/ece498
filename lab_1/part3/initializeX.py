@@ -8,7 +8,7 @@ def function(shape=(1,1)):
     """ 
         Returns a tensorflow variable initialize to random numbers
 
-        Params:
+        Args:
             shape (tuple): represents the dimensions of the variable
 
     """
