@@ -4,6 +4,8 @@ import tensorflow as tf
 import numpy as np
 from tensorflow import keras
 
+input_size = 1000
+
 def get_testset():
     url = 'https://courses.engr.illinois.edu/ece498icc/sp2020/lab1_request_dataset.php'
     values = {'request': 'testdata', 'netid':'cdf2'}
@@ -25,29 +27,38 @@ def verify_predictions(predictions, testset_id):
     url = 'https://courses.engr.illinois.edu/ece498icc/sp2020/lab1_request_dataset.php'
     values = {'request': 'verify', 'netid':'cdf2', 'testset_id':testset_id, 'prediction':predictions}
     r = requests.post(url, data=values)
-    print(r.text)
-    return int(r.text)
+    
+    # get successful prediction value from response
+    accuracy = int(r.text) / input_size
+    print("Prediction Accuracy:", accuracy)
+    return accuracy
     
 accuracy = []
 
-for i in range(10):
+# load model 
+model = keras.models.load_model('model_cdf2.h5')
+
+print("\nChristian Fernandez | cdf2\n")
+
+for i in range(5):
+    # fetch data from server
     data, testset_id = get_testset()
 
     # reshape the data
     data = data.reshape(1000, 28, 28, 1)
 
-    # load model 
-    model = keras.models.load_model('model_cdf2.h5')
+    # make predictions using model
     predictions = model.predict(data)
     predictions = tf.argmax(predictions, 1)
 
+    # evaluate the predictions
     with tf.Session() as sess:
         predictions = sess.run(predictions)
 
     predictions = ''.join(predictions.astype(str))
     accuracy.append(verify_predictions(predictions, testset_id))
 
-print("Mean Accuracy:", np.mean(accuracy)/1000)
+print("Mean Accuracy:", np.mean(accuracy))
 
 # cleanup
 import os
