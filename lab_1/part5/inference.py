@@ -30,7 +30,7 @@ def verify_predictions(predictions, testset_id):
     
     # get successful prediction value from response
     accuracy = int(r.text) / input_size
-    print("Prediction Accuracy:", accuracy)
+    print("Prediction Accuracy:", accuracy, "Testset ID:", testset_id)
     return accuracy
     
 accuracy = []
