@@ -55,8 +55,8 @@ def conv_net(x, dropout):
 model = conv_net(X, keep_prob)
 
 # Define loss and optimizer
-loss_op = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=model, labels=Y))
-#loss_op = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=model, labels=Y)
+#loss_op = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=model, labels=Y))
+loss_op = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=model, labels=Y)
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
 train_op = optimizer.minimize(loss_op)
 
@@ -74,13 +74,15 @@ with tf.Session() as sess:
     sess.run(init)
 
     for epoch in range(epochs):
-        for i in range(len(train_images)):
+        for i in range(500):
             batch_x = train_images[i]
             batch_y = train_labels[i]
-            breakpoint()
+            batch_y = np.array(batch_y).reshape((1,))
+            
             sess.run(train_op, feed_dict={X: batch_x, Y: batch_y, keep_prob: dropout})
-        breakpoint()
-        # Calculate loss and accuracy
-        loss, acc = sess.run([loss_op, accuracy], feed_dict={ X: batch_x, 
-                                                              Y: batch_y, 
-                                                              keep_prob: 1.0})
+                                                                        
+            # Calculate loss and accuracy
+            loss = sess.run(loss_op, feed_dict={ X: batch_x, 
+                                                 Y: batch_y})
+            print(loss)            
+                                                            
