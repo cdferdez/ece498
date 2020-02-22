@@ -10,6 +10,10 @@ fashion_mnist = keras.datasets.fashion_mnist
 train_images = train_images / 255
 test_images = test_images / 255
 
+# one hot the labels
+train_labels = tf.keras.utils.to_categorical(train_labels)
+test_labels = tf.keras.utils.to_categorical(test_labels)
+
 BATCH_SIZE = 64
 SHUFFLE_BUFFER_SIZE = 100
 
@@ -21,10 +25,10 @@ display_step = 10
 # Network Parameters
 num_classes = 10
 dropout = 0.75
-
+breakpoint()
 # Graph Input
-X = tf.placeholder(tf.float32, shape=(28, 28))
-Y = tf.placeholder(tf.int32)
+X = tf.placeholder(tf.float32, shape=(None, 28, 28))
+Y = tf.placeholder(tf.int32, shape=[None, num_classes])
 keep_prob = tf.placeholder(tf.float32)
 
 # model
@@ -55,8 +59,8 @@ def conv_net(x, dropout):
 model = conv_net(X, keep_prob)
 
 # Define loss and optimizer
-#loss_op = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=model, labels=Y))
-loss_op = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=model, labels=Y)
+loss_op = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=model, labels=Y))
+#loss_op = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=model, labels=Y)
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
 train_op = optimizer.minimize(loss_op)
 
@@ -72,17 +76,19 @@ with tf.Session() as sess:
 
     # Run the initializer
     sess.run(init)
-
+    
     for epoch in range(epochs):
-        for i in range(500):
-            batch_x = train_images[i]
-            batch_y = train_labels[i]
-            batch_y = np.array(batch_y).reshape((1,))
-            
+        for i in range(len(train_labels)):
+            batch_x = np.array(train_images[i]).reshape((-1, 28, 28))
+            batch_y = np.array(train_labels[i]).reshape((1, 10))
+
             sess.run(train_op, feed_dict={X: batch_x, Y: batch_y, keep_prob: dropout})
                                                                         
             # Calculate loss and accuracy
             loss = sess.run(loss_op, feed_dict={ X: batch_x, 
                                                  Y: batch_y})
-            print(loss)            
+
+            acc = sess.run(accuracy, feed_dict={ X: batch_x,
+                                                 Y: batch_y})                                                 
+            print(loss, acc)            
                                                             
