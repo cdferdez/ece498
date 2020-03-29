@@ -1,0 +1,100 @@
+
+Test input 0
+The dimensions of A are 64 x 64
+The dimensions of B are 64 x 64
+The dimensions of C are 64 x 64
+Solution is correct
+
+real	0m0.199s
+user	0m0.120s
+sys	0m0.044s
+
+Test input 1
+The dimensions of A are 128 x 64
+The dimensions of B are 64 x 128
+The dimensions of C are 128 x 128
+Solution is correct
+
+real	0m0.124s
+user	0m0.040s
+sys	0m0.044s
+
+Test input 2
+The dimensions of A are 100 x 128
+The dimensions of B are 128 x 56
+The dimensions of C are 100 x 56
+Solution is correct
+
+real	0m0.107s
+user	0m0.040s
+sys	0m0.040s
+
+Test input 3
+The dimensions of A are 128 x 64
+The dimensions of B are 64 x 128
+The dimensions of C are 128 x 128
+Solution is correct
+
+real	0m0.109s
+user	0m0.032s
+sys	0m0.052s
+
+Test input 4
+The dimensions of A are 32 x 128
+The dimensions of B are 128 x 32
+The dimensions of C are 32 x 32
+Solution is correct
+
+real	0m0.104s
+user	0m0.024s
+sys	0m0.052s
+
+Test input 5
+The dimensions of A are 200 x 100
+The dimensions of B are 100 x 256
+The dimensions of C are 200 x 256
+Solution is correct
+
+real	0m0.152s
+user	0m0.080s
+sys	0m0.040s
+
+Test input 6
+The dimensions of A are 256 x 256
+The dimensions of B are 256 x 256
+The dimensions of C are 256 x 256
+Solution is correct
+
+real	0m0.203s
+user	0m0.128s
+sys	0m0.044s
+
+Test input 7
+The dimensions of A are 256 x 300
+The dimensions of B are 300 x 256
+The dimensions of C are 256 x 256
+Solution is correct
+
+real	0m0.221s
+user	0m0.140s
+sys	0m0.044s
+
+Test input 8
+The dimensions of A are 64 x 128
+The dimensions of B are 128 x 64
+The dimensions of C are 64 x 64
+Solution is correct
+
+real	0m0.100s
+user	0m0.032s
+sys	0m0.040s
+
+Test input 9
+The dimensions of A are 256 x 256
+The dimensions of B are 256 x 257
+The dimensions of C are 256 x 257
+Solution is correct
+
+real	0m0.224s
+user	0m0.136s
+sys	0m0.044s
